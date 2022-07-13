@@ -1,0 +1,29 @@
+package com.example.demo;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class MyRedisService {
+
+    @Caching(
+            cacheable={@Cacheable(value ="hello", key="#myUser.name + #root.methodName") },
+            put={@CachePut(value="hello", key="#myUser.name + #root.methodName", condition="#myUser.age==12") },
+            evict={@CacheEvict(value="hello", key="#myUser.name + #root.methodName", allEntries=false, condition="#myUser.age==99")}
+    )
+    public List<Map<String, Object>> getResultList(MyUser myUser) {
+        Map<String, Object> resultMap1 = new HashMap<>();
+        resultMap1.put("result", "result10");
+        Map<String, Object> resultMap2 = new HashMap<>();
+        resultMap2.put("result", "result20");
+        System.out.println("MyRedisService.getResultList executed! input : " + myUser.toString());
+        return List.of(resultMap1, resultMap2);
+    }
+}
